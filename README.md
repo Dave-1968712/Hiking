@@ -1,5 +1,6 @@
 # Hiking - 山野徒步 (Scenic Hiking Routes Platform)
 
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FDave-1968712%2FHiking)
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Status](https://img.shields.io/badge/status-Active-success.svg)
 ![Vue.js](https://img.shields.io/badge/Vue.js-3.x-4FC08D.svg)
