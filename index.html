@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>山野徒步 - 探索国内最美徒步线路</title>
+    <title>加载中...</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts -->
@@ -482,10 +482,37 @@
                     } else {
                         console.warn('Site title element not found');
                     }
+                    
+                    // Update Page Title (strip HTML)
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = data.value;
+                    const textContent = tempDiv.textContent || tempDiv.innerText || '';
+                    document.title = textContent + " - 山野徒步";
                 }
             } catch (e) {
                 console.error('Error fetching site config:', e);
+                document.title = "山野徒步 - 探索国内最美徒步线路"; // Fallback
             }
+        }
+
+        // Subscribe to Realtime Changes
+        function subscribeToSiteConfig() {
+            supabase
+                .channel('site-config-changes')
+                .on(
+                    'postgres_changes',
+                    {
+                        event: 'UPDATE',
+                        schema: 'public',
+                        table: 'site_config',
+                        filter: 'key=eq.site_title',
+                    },
+                    (payload) => {
+                        console.log('Realtime update received:', payload);
+                        fetchSiteConfig();
+                    }
+                )
+                .subscribe();
         }
 
         // Map DB route to Frontend route
@@ -1015,6 +1042,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             fetchRoutes();
             fetchSiteConfig();
+            subscribeToSiteConfig();
         });
 
     </script>
