@@ -10,6 +10,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Supabase JS -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     
     <!-- Tailwind Config for Shadcn-like Theme -->
     <script>
@@ -451,11 +453,38 @@
 
     <!-- JavaScript Logic -->
     <script>
+        // --- Config ---
+        const SUPABASE_URL = 'https://dojjyarpayutgwwvyvho.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRvamp5YXJwYXl1dGd3d3Z5dmhvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE0MDMyNDAsImV4cCI6MjA4Njk3OTI0MH0.IUOk8MaMMdrdLRpErc8GM16akFn6Kitt4ppLL9B8hU4';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
         // --- Data ---
         let routesData = [];
         const API_URL = 'https://dojjyarpayutgwwvyvho.supabase.co/functions/v1/scenic-routes-v4';
 
         // --- Functions ---
+
+        // Fetch Site Config
+        async function fetchSiteConfig() {
+            try {
+                const { data, error } = await supabase
+                    .from('site_config')
+                    .select('value')
+                    .eq('key', 'site_title')
+                    .single();
+                
+                if (error && error.code !== 'PGRST116') throw error;
+                
+                if (data && data.value) {
+                    const titleEl = document.querySelector('h1.text-4xl');
+                    if (titleEl) {
+                        titleEl.innerHTML = data.value;
+                    }
+                }
+            } catch (e) {
+                console.error('Error fetching site config:', e);
+            }
+        }
 
         // Map DB route to Frontend route
         function mapRoute(dbRoute) {
@@ -983,6 +1012,7 @@
         // Initial Render
         document.addEventListener('DOMContentLoaded', () => {
             fetchRoutes();
+            fetchSiteConfig();
         });
 
     </script>
