@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>山野徒步 - 探索国内最美徒步线路</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Tailwind Config for Shadcn-like Theme -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Noto Sans SC"', 'sans-serif'],
+                    },
+                    colors: {
+                        border: "hsl(var(--border))",
+                        input: "hsl(var(--input))",
+                        ring: "hsl(var(--ring))",
+                        background: "hsl(var(--background))",
+                        foreground: "hsl(var(--foreground))",
+                        primary: {
+                            DEFAULT: "hsl(var(--primary))",
+                            foreground: "hsl(var(--primary-foreground))",
+                        },
+                        secondary: {
+                            DEFAULT: "hsl(var(--secondary))",
+                            foreground: "hsl(var(--secondary-foreground))",
+                        },
+                        destructive: {
+                            DEFAULT: "hsl(var(--destructive))",
+                            foreground: "hsl(var(--destructive-foreground))",
+                        },
+                        muted: {
+                            DEFAULT: "hsl(var(--muted))",
+                            foreground: "hsl(var(--muted-foreground))",
+                        },
+                        accent: {
+                            DEFAULT: "hsl(var(--accent))",
+                            foreground: "hsl(var(--accent-foreground))",
+                        },
+                        popover: {
+                            DEFAULT: "hsl(var(--popover))",
+                            foreground: "hsl(var(--popover-foreground))",
+                        },
+                        card: {
+                            DEFAULT: "hsl(var(--card))",
+                            foreground: "hsl(var(--card-foreground))",
+                        },
+                    },
+                    borderRadius: {
+                        lg: "var(--radius)",
+                        md: "calc(var(--radius) - 2px)",
+                        sm: "calc(var(--radius) - 4px)",
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --background: 0 0% 100%;
+            --foreground: 222.2 84% 4.9%;
+            --card: 0 0% 100%;
+            --card-foreground: 222.2 84% 4.9%;
+            --popover: 0 0% 100%;
+            --popover-foreground: 222.2 84% 4.9%;
+            --primary: 142.1 76.2% 36.3%; /* Forest Green */
+            --primary-foreground: 355.7 100% 97.3%;
+            --secondary: 210 40% 96.1%;
+            --secondary-foreground: 222.2 47.4% 11.2%;
+            --muted: 210 40% 96.1%;
+            --muted-foreground: 215.4 16.3% 46.9%;
+            --accent: 210 40% 96.1%;
+            --accent-foreground: 222.2 47.4% 11.2%;
+            --destructive: 0 84.2% 60.2%;
+            --destructive-foreground: 210 40% 98%;
+            --border: 214.3 31.8% 91.4%;
+            --input: 214.3 31.8% 91.4%;
+            --ring: 142.1 76.2% 36.3%;
+            --radius: 0.5rem;
+        }
+        .dark {
+            --background: 222.2 84% 4.9%;
+            --foreground: 210 40% 98%;
+            --card: 222.2 84% 4.9%;
+            --card-foreground: 210 40% 98%;
+            --popover: 222.2 84% 4.9%;
+            --popover-foreground: 210 40% 98%;
+            --primary: 142.1 70.6% 45.3%;
+            --primary-foreground: 144.9 80.4% 10%;
+            --secondary: 217.2 32.6% 17.5%;
+            --secondary-foreground: 210 40% 98%;
+            --muted: 217.2 32.6% 17.5%;
+            --muted-foreground: 215 20.2% 65.1%;
+            --accent: 217.2 32.6% 17.5%;
+            --accent-foreground: 210 40% 98%;
+            --destructive: 0 62.8% 30.6%;
+            --destructive-foreground: 210 40% 98%;
+            --border: 217.2 32.6% 17.5%;
+            --input: 217.2 32.6% 17.5%;
+            --ring: 142.4 71.8% 29.2%;
+        }
+    </style>
+</head>
+<body class="bg-background text-foreground font-sans antialiased min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div class="container mx-auto px-4 md:px-6 h-16 flex items-center justify-between">
+            <a href="#" class="flex items-center gap-2 font-bold text-xl text-primary">
+                <i data-lucide="mountain" class="h-6 w-6"></i>
+                <span>山野徒步</span>
+            </a>
+            
+            <!-- Desktop Navigation -->
+            <nav class="hidden md:flex items-center gap-6 text-sm font-medium">
+                <a href="#routes" class="hover:text-primary transition-colors">精选线路</a>
+                <a href="#gear" class="hover:text-primary transition-colors">装备指南</a>
+                <a href="#community" class="hover:text-primary transition-colors">社群交流</a>
+            </nav>
+
+            <!-- Mobile Menu Button -->
+            <button id="mobile-menu-btn" class="md:hidden p-2 rounded-md hover:bg-accent hover:text-accent-foreground">
+                <i data-lucide="menu" class="h-6 w-6"></i>
+            </button>
+        </div>
+
+        <!-- Mobile Navigation (Hidden by default) -->
+        <div id="mobile-menu" class="hidden md:hidden border-t bg-background absolute w-full left-0 top-16 shadow-lg">
+            <nav class="flex flex-col p-4 space-y-4 text-sm font-medium">
+                <a href="#routes" class="block py-2 hover:text-primary transition-colors" onclick="toggleMobileMenu()">精选线路</a>
+                <a href="#gear" class="block py-2 hover:text-primary transition-colors" onclick="toggleMobileMenu()">装备指南</a>
+                <a href="#community" class="block py-2 hover:text-primary transition-colors" onclick="toggleMobileMenu()">社群交流</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="relative h-[600px] flex items-center justify-center overflow-hidden">
+        <!-- Background Image with Overlay -->
+        <div class="absolute inset-0 z-0">
+            <img src="https://images.unsplash.com/photo-1551632811-561732d1e306?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80" alt="Hiking Background" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-black/40"></div>
+        </div>
+        
+        <div class="container relative z-10 px-4 md:px-6 text-center text-white space-y-6">
+            <h1 class="text-4xl md:text-6xl font-bold tracking-tight">
+                探索脚下的路<br>发现心中的山
+            </h1>
+            <p class="text-lg md:text-xl text-gray-200 max-w-2xl mx-auto">
+                汇集国内最美的徒步线路，提供专业的装备建议，连接每一位热爱自然的行者。
+            </p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4 pt-4">
+                <a href="#routes" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-11 px-8">
+                    开始探索
+                </a>
+                <a href="#community" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-secondary text-secondary-foreground hover:bg-secondary/80 h-11 px-8">
+                    加入社群
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features / Intro -->
+    <section class="py-16 bg-muted/30">
+        <div class="container mx-auto px-4 md:px-6">
+            <div class="grid md:grid-cols-3 gap-8 text-center">
+                <div class="flex flex-col items-center space-y-3 p-6 bg-card rounded-lg shadow-sm border">
+                    <div class="p-3 bg-primary/10 rounded-full text-primary">
+                        <i data-lucide="map" class="h-8 w-8"></i>
+                    </div>
+                    <h3 class="text-xl font-bold">精选线路</h3>
+                    <p class="text-muted-foreground">从入门级郊游到高海拔重装穿越，每一条线路都经过精心筛选与评级。</p>
+                </div>
+                <div class="flex flex-col items-center space-y-3 p-6 bg-card rounded-lg shadow-sm border">
+                    <div class="p-3 bg-primary/10 rounded-full text-primary">
+                        <i data-lucide="backpack" class="h-8 w-8"></i>
+                    </div>
+                    <h3 class="text-xl font-bold">装备指南</h3>
+                    <p class="text-muted-foreground">告别盲目购买，为您提供科学的装备清单和真实的评测建议。</p>
+                </div>
+                <div class="flex flex-col items-center space-y-3 p-6 bg-card rounded-lg shadow-sm border">
+                    <div class="p-3 bg-primary/10 rounded-full text-primary">
+                        <i data-lucide="users" class="h-8 w-8"></i>
+                    </div>
+                    <h3 class="text-xl font-bold">同行伙伴</h3>
+                    <p class="text-muted-foreground">加入我们的活跃社群，寻找志同道合的徒步搭子，分享路上的故事。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Routes Section -->
+    <section id="routes" class="py-16 md:py-24">
+        <div class="container mx-auto px-4 md:px-6">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
+                <div>
+                    <h2 class="text-3xl font-bold tracking-tight mb-2">国内热门徒步线路</h2>
+                    <p class="text-muted-foreground">发现你的下一次冒险目的地</p>
+                </div>
+                
+                <!-- Filters -->
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="filterRoutes('all')" class="filter-btn active px-4 py-2 rounded-full text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 transition-colors" data-filter="all">全部</button>
+                    <button onclick="filterRoutes('easy')" class="filter-btn px-4 py-2 rounded-full text-sm font-medium bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-colors" data-filter="easy">入门休闲</button>
+                    <button onclick="filterRoutes('moderate')" class="filter-btn px-4 py-2 rounded-full text-sm font-medium bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-colors" data-filter="moderate">进阶挑战</button>
+                    <button onclick="filterRoutes('hard')" class="filter-btn px-4 py-2 rounded-full text-sm font-medium bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-colors" data-filter="hard">高能硬核</button>
+                    <button onclick="filterRoutes('photography')" class="filter-btn px-4 py-2 rounded-full text-sm font-medium bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-colors" data-filter="photography">摄影</button>
+                </div>
+            </div>
+
+            <!-- Routes Grid -->
+            <div id="routes-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Route Cards will be injected here by JS -->
+            </div>
+            
+            <!-- Error Message / Retry -->
+            <div id="error-container" class="hidden flex flex-col items-center justify-center py-12 text-center">
+                <i data-lucide="alert-circle" class="h-12 w-12 text-destructive mb-4"></i>
+                <p class="text-lg font-medium text-foreground mb-2">网络异常，请稍后重试</p>
+                <button onclick="fetchRoutes()" class="px-6 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors">
+                    重试
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gear Section -->
+    <section id="gear" class="py-16 md:py-24 bg-muted/50">
+        <div class="container mx-auto px-4 md:px-6">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold tracking-tight mb-4">必备装备清单</h2>
+                <p class="text-muted-foreground max-w-2xl mx-auto">
+                    无论你是第一次踏上步道，还是准备挑战雪山，合适的装备都是安全的保障。
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8 lg:gap-12">
+                <!-- Gear List: Basic -->
+                <div class="bg-card rounded-xl border shadow-sm overflow-hidden">
+                    <div class="p-6 border-b bg-primary/5">
+                        <h3 class="text-xl font-bold flex items-center gap-2">
+                            <i data-lucide="compass" class="h-5 w-5 text-primary"></i>
+                            新手入门包
+                        </h3>
+                        <p class="text-sm text-muted-foreground mt-1">适合单日往返或轻装徒步</p>
+                    </div>
+                    <ul class="divide-y">
+                        <li class="p-4 flex items-start gap-3 hover:bg-accent/50 transition-colors">
+                            <i data-lucide="check-circle-2" class="h-5 w-5 text-green-500 mt-0.5 shrink-0"></i>
+                            <div>
+                                <span class="font-medium">徒步鞋/越野跑鞋</span>
+                                <p class="text-sm text-muted-foreground">防滑大底，舒适透气，不需要重装靴。</p>
+                            </div>
+                        </li>
+                        <li class="p-4 flex items-start gap-3 hover:bg-accent/50 transition-colors">
+                            <i data-lucide="check-circle-2" class="h-5 w-5 text-green-500 mt-0.5 shrink-0"></i>
+                            <div>
+                                <span class="font-medium">双肩背包 (20-30L)</span>
+                                <p class="text-sm text-muted-foreground">带有背负系统，能装下水、食物和备用衣物。</p>
+                            </div>
+                        </li>
+                        <li class="p-4 flex items-start gap-3 hover:bg-accent/50 transition-colors">
+                            <i data-lucide="check-circle-2" class="h-5 w-5 text-green-500 mt-0.5 shrink-0"></i>
+                            <div>
+                                <span class="font-medium">速干衣裤</span>
+                                <p class="text-sm text-muted-foreground">切忌纯棉！出汗后不易干，容易导致失温。</p>
+                            </div>
+                        </li>
+                         <li class="p-4 flex items-start gap-3 hover:bg-accent/50 transition-colors">
+                            <i data-lucide="check-circle-2" class="h-5 w-5 text-green-500 mt-0.5 shrink-0"></i>
+                            <div>
+                                <span class="font-medium">雨具</span>
+                                <p class="text-sm text-muted-foreground">轻便雨衣或冲锋衣，山里天气多变。</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Gear List: Advanced -->
+                <div class="bg-card rounded-xl border shadow-sm overflow-hidden">
+                    <div class="p-6 border-b bg-primary/5">
+                        <h3 class="text-xl font-bold flex items-center gap-2">
+                            <i data-lucide="tent" class="h-5 w-5 text-primary"></i>
+                            进阶露营包
+                        </h3>
+                        <p class="text-sm text-muted-foreground mt-1">适合多日重装穿越或高海拔线路</p>
+                    </div>
+                    <ul class="divide-y">
+                        <li class="p-4 flex items-start gap-3 hover:bg-accent/50 transition-colors">
+                            <i data-lucide="check-circle-2" class="h-5 w-5 text-green-500 mt-0.5 shrink-0"></i>
+                            <div>
+                                <span class="font-medium">重装徒步鞋</span>
+                                <p class="text-sm text-muted-foreground">高帮防水（Gore-Tex），Vibram大底，保护脚踝。</p>
+                            </div>
+                        </li>
+                        <li class="p-4 flex items-start gap-3 hover:bg-accent/50 transition-colors">
+                            <i data-lucide="check-circle-2" class="h-5 w-5 text-green-500 mt-0.5 shrink-0"></i>
+                            <div>
+                                <span class="font-medium">重装背包 (50L+)</span>
+                                <p class="text-sm text-muted-foreground">强大的背负系统至关重要，一定要试背。</p>
+                            </div>
+                        </li>
+                        <li class="p-4 flex items-start gap-3 hover:bg-accent/50 transition-colors">
+                            <i data-lucide="check-circle-2" class="h-5 w-5 text-green-500 mt-0.5 shrink-0"></i>
+                            <div>
+                                <span class="font-medium">露营睡眠系统</span>
+                                <p class="text-sm text-muted-foreground">轻量化帐篷、高R值防潮垫、羽绒睡袋。</p>
+                            </div>
+                        </li>
+                        <li class="p-4 flex items-start gap-3 hover:bg-accent/50 transition-colors">
+                            <i data-lucide="check-circle-2" class="h-5 w-5 text-green-500 mt-0.5 shrink-0"></i>
+                            <div>
+                                <span class="font-medium">炊具与炉头</span>
+                                <p class="text-sm text-muted-foreground">一体式炉头或反应堆，轻量化钛锅。</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Community Section -->
+    <section id="community" class="py-16 md:py-24">
+        <div class="container mx-auto px-4 md:px-6">
+            <div class="bg-primary rounded-2xl p-8 md:p-12 text-primary-foreground shadow-lg flex flex-col md:flex-row items-center justify-between gap-8">
+                <div class="space-y-4 max-w-lg">
+                    <h2 class="text-3xl font-bold tracking-tight">加入山野徒步社群</h2>
+                    <p class="text-primary-foreground/90 text-lg">
+                        一个人可以走得很快，一群人可以走得更远。加入我们的交流群，获取实时路况，结识同行伙伴，分享你的精彩瞬间。
+                    </p>
+                    <ul class="space-y-2">
+                        <li class="flex items-center gap-2">
+                            <i data-lucide="check" class="h-5 w-5"></i>
+                            <span>每周线路分享会</span>
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <i data-lucide="check" class="h-5 w-5"></i>
+                            <span>老驴在线答疑解惑</span>
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <i data-lucide="check" class="h-5 w-5"></i>
+                            <span>线下AA约伴活动</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="bg-white p-6 rounded-xl shadow-inner flex flex-col items-center space-y-4 min-w-[280px]">
+                    <div class="w-48 h-48 bg-gray-100 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300">
+                        <!-- Placeholder QR Code -->
+                        <div class="text-center text-gray-500">
+                            <i data-lucide="qr-code" class="h-16 w-16 mx-auto mb-2 opacity-50"></i>
+                            <span class="text-sm">在此放置二维码</span>
+                        </div>
+                    </div>
+                    <div class="text-center text-gray-800">
+                        <p class="font-bold">扫码加入微信群</p>
+                        <p class="text-xs text-muted-foreground mt-1">进群请备注：山野徒步</p>
+                    </div>
+                    <button class="w-full inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2" onclick="alert('模拟操作：已复制微信号 shanyetubu001')">
+                        复制微信号
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="border-t bg-muted/30 py-12">
+        <div class="container mx-auto px-4 md:px-6">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="flex items-center gap-2 font-bold text-xl text-primary">
+                    <i data-lucide="mountain" class="h-6 w-6"></i>
+                    <span>山野徒步</span>
+                </div>
+                
+                <p class="text-sm text-muted-foreground text-center md:text-left">
+                    &copy; 2024 山野徒步. All rights reserved. <br class="md:hidden">
+                    仅供演示使用，非真实运营网站。
+                </p>
+                
+                <div class="flex gap-4">
+                    <a href="#" class="text-muted-foreground hover:text-foreground transition-colors">
+                        <i data-lucide="twitter" class="h-5 w-5"></i>
+                    </a>
+                    <a href="#" class="text-muted-foreground hover:text-foreground transition-colors">
+                        <i data-lucide="instagram" class="h-5 w-5"></i>
+                    </a>
+                    <a href="#" class="text-muted-foreground hover:text-foreground transition-colors">
+                        <i data-lucide="github" class="h-5 w-5"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Routes Detail Modal (Full Page) -->
+    <div id="route-detail-page" class="fixed inset-0 z-50 bg-background overflow-y-auto hidden">
+        <!-- Close Button -->
+        <button onclick="hideRouteDetails()" class="fixed top-4 right-4 z-50 p-2 rounded-full bg-background/80 backdrop-blur shadow-md hover:bg-accent transition-colors">
+            <i data-lucide="x" class="h-6 w-6"></i>
+        </button>
+
+        <!-- Detail Content Container -->
+        <div id="detail-content" class="min-h-screen pb-20">
+            <!-- Content will be injected here by JS -->
+        </div>
+
+        <!-- Bottom Action Bar -->
+        <div class="fixed bottom-0 left-0 w-full border-t bg-background/95 backdrop-blur p-4 flex justify-between items-center px-6 md:px-12">
+            <div class="hidden md:block">
+                <p class="text-sm text-muted-foreground">对这条线路感兴趣？</p>
+                <p class="font-bold text-primary">加入社群获取详细路书</p>
+            </div>
+            <div class="flex gap-4 w-full md:w-auto">
+                <button onclick="hideRouteDetails()" class="flex-1 md:flex-none px-6 py-2.5 rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground font-medium transition-colors">
+                    返回列表
+                </button>
+                <button onclick="window.location.href='#community'; hideRouteDetails()" class="flex-1 md:flex-none px-6 py-2.5 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 font-medium transition-colors shadow-sm">
+                    立即咨询 / 组队
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Photo Gallery Modal -->
+    <div id="photo-gallery-modal" class="fixed inset-0 z-[60] bg-black/95 hidden flex flex-col justify-center items-center p-4">
+        <button onclick="hidePhotoGallery()" class="absolute top-4 right-4 text-white/70 hover:text-white p-2">
+            <i data-lucide="x" class="h-8 w-8"></i>
+        </button>
+        
+        <div class="w-full max-w-5xl flex flex-col items-center">
+            <div id="gallery-image-container" class="relative w-full aspect-[16/9] mb-4 bg-black/50 flex items-center justify-center rounded-lg overflow-hidden">
+                <!-- Image will be injected here -->
+            </div>
+            
+            <div id="gallery-info" class="text-white text-center max-w-2xl">
+                <!-- Info will be injected here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // --- Data ---
+        let routesData = [];
+        const API_URL = 'https://dojjyarpayutgwwvyvho.supabase.co/functions/v1/scenic-routes-v4';
+
+        // --- Functions ---
+
+        // Map DB route to Frontend route
+        function mapRoute(dbRoute) {
+            return {
+                id: dbRoute.id,
+                title: dbRoute.title,
+                location: dbRoute.location,
+                difficulty: dbRoute.difficulty,
+                distance: dbRoute.distance,
+                duration: dbRoute.duration, // Using duration string from DB
+                image: dbRoute.cover_image,
+                tags: dbRoute.tags || [],
+                desc: dbRoute.description,
+                fullDesc: dbRoute.full_desc,
+                altitude: dbRoute.altitude,
+                bestSeason: dbRoute.best_season,
+                gear: dbRoute.gear || [],
+                itinerary: dbRoute.itinerary || [],
+                scenicSpots: dbRoute.scenic_spots,
+                category: dbRoute.category
+            };
+        }
+
+        // Fetch Routes
+        async function fetchRoutes() {
+            const grid = document.getElementById('routes-grid');
+            const errorContainer = document.getElementById('error-container');
+            
+            // Reset UI
+            grid.innerHTML = '';
+            errorContainer.classList.add('hidden');
+            
+            // Show Skeleton
+            const skeletonHTML = `
+                <div class="rounded-xl border bg-card shadow-sm h-full overflow-hidden animate-pulse">
+                    <div class="h-48 bg-muted"></div>
+                    <div class="p-6 space-y-4">
+                        <div class="h-6 bg-muted rounded w-3/4"></div>
+                        <div class="h-4 bg-muted rounded w-1/2"></div>
+                        <div class="space-y-2">
+                            <div class="h-4 bg-muted rounded w-full"></div>
+                            <div class="h-4 bg-muted rounded w-full"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            // Render 6 skeletons
+            grid.innerHTML = Array(6).fill(skeletonHTML).join('');
+
+            try {
+                const response = await fetch(`${API_URL}?limit=50`); // Fetch all for now to support client-side filtering
+                
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                
+                const result = await response.json();
+                
+                if (result.code === 0 && Array.isArray(result.data)) {
+                    // Transform and save data
+                    routesData = result.data.map(mapRoute);
+                    
+                    // Render
+                    renderRoutes('all');
+                } else {
+                    throw new Error(result.msg || 'Failed to load data');
+                }
+            } catch (error) {
+                console.error('Error fetching routes:', error);
+                grid.innerHTML = ''; // Clear skeletons
+                errorContainer.classList.remove('hidden');
+                
+                // Show toast
+                const toast = document.createElement('div');
+                toast.className = 'fixed bottom-4 right-4 bg-destructive text-destructive-foreground px-4 py-2 rounded-md shadow-lg z-50 animate-in slide-in-from-bottom-2 fade-in';
+                toast.innerText = '网络异常，请稍后重试';
+                document.body.appendChild(toast);
+                setTimeout(() => toast.remove(), 3000);
+            }
+        }
+
+        // Initialize Icons
+        lucide.createIcons();
+
+        // Render Routes
+        function renderRoutes(filter = 'all') {
+            const grid = document.getElementById('routes-grid');
+            grid.innerHTML = ''; // Clear existing
+
+            let filteredData = routesData;
+            if (filter !== 'all') {
+                if (filter === 'photography') {
+                    filteredData = routesData.filter(route => route.category === 'photography');
+                } else {
+                    filteredData = routesData.filter(route => route.difficulty === filter);
+                }
+            }
+
+            if (filteredData.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full text-center py-12 text-muted-foreground">
+                        暂无相关线路
+                    </div>
+                `;
+                return;
+            }
+
+            filteredData.forEach(route => {
+                const difficultyColor = {
+                    'easy': 'bg-green-100 text-green-700',
+                    'moderate': 'bg-yellow-100 text-yellow-700',
+                    'hard': 'bg-red-100 text-red-700'
+                }[route.difficulty] || 'bg-gray-100 text-gray-700';
+
+                const difficultyLabel = {
+                    'easy': '入门休闲',
+                    'moderate': '进阶挑战',
+                    'hard': '高能硬核'
+                }[route.difficulty] || '未知';
+
+                const cardHTML = `
+                    <div class="group rounded-xl border bg-card text-card-foreground shadow-sm transition-all hover:shadow-md overflow-hidden flex flex-col h-full cursor-pointer" onclick="showRouteDetails(${route.id})">
+                        <div class="relative h-48 overflow-hidden">
+                            <img src="${route.image}" alt="${route.title}" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy">
+                            <div class="absolute top-3 right-3 px-2.5 py-0.5 rounded-full text-xs font-semibold ${difficultyColor}">
+                                ${difficultyLabel}
+                            </div>
+                        </div>
+                        <div class="p-6 flex flex-col flex-grow">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="text-xl font-bold tracking-tight group-hover:text-primary transition-colors">${route.title}</h3>
+                            </div>
+                            <div class="flex items-center text-sm text-muted-foreground mb-4">
+                                <i data-lucide="map-pin" class="h-3.5 w-3.5 mr-1"></i>
+                                ${route.location}
+                            </div>
+                            <p class="text-sm text-muted-foreground mb-4 flex-grow line-clamp-2">
+                                ${route.desc}
+                            </p>
+                            
+                            <div class="flex items-center justify-between pt-4 border-t mt-auto">
+                                <div class="flex gap-4 text-sm font-medium">
+                                    <div class="flex items-center gap-1" title="徒步距离">
+                                        <i data-lucide="ruler" class="h-4 w-4 text-primary"></i>
+                                        <span>${route.distance}</span>
+                                    </div>
+                                    <div class="flex items-center gap-1" title="预计耗时">
+                                        <i data-lucide="clock" class="h-4 w-4 text-primary"></i>
+                                        <span>${route.duration}</span>
+                                    </div>
+                                </div>
+                                <button class="text-sm font-medium text-primary hover:underline">
+                                    查看详情
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                grid.insertAdjacentHTML('beforeend', cardHTML);
+            });
+            
+            // Re-initialize icons for newly added elements
+            lucide.createIcons();
+        }
+
+        // Show Details Function
+        function showRouteDetails(id) {
+            const route = routesData.find(r => r.id === id);
+            if (!route) return;
+
+            const detailPage = document.getElementById('route-detail-page');
+            const contentContainer = document.getElementById('detail-content');
+            
+            // Generate Itinerary HTML
+            const itineraryHTML = route.itinerary.map((item, dayIndex) => {
+                let photoLink = '';
+                if (item.photos && item.photos.length > 0) {
+                    photoLink = `
+                        <div class="mt-3">
+                            <button onclick="showPhotoGallery(${route.id}, ${dayIndex}, 0)" class="inline-flex items-center gap-1.5 text-xs font-medium text-primary border border-primary/30 rounded-full px-3 py-1 hover:bg-primary/10 transition-colors">
+                                <i data-lucide="camera" class="h-3.5 w-3.5"></i>
+                                查看摄影机位 & 参数
+                            </button>
+                        </div>
+                    `;
+                }
+
+                return `
+                <div class="relative pl-8 pb-8 last:pb-0 border-l-2 border-primary/20 last:border-0 ml-2">
+                    <div class="absolute -left-[9px] top-0 h-4 w-4 rounded-full bg-primary border-4 border-background"></div>
+                    <div class="mb-1 text-sm font-bold text-primary">${item.day}</div>
+                    <h4 class="text-lg font-semibold mb-2">${item.title}</h4>
+                    <p class="text-muted-foreground text-sm leading-relaxed">${item.desc}</p>
+                    ${photoLink}
+                </div>
+                `;
+            }).join('');
+
+            // Generate Gear HTML
+            const gearHTML = route.gear.map(item => `
+                <div class="flex items-center gap-2 text-sm p-3 bg-accent/30 rounded-lg">
+                    <i data-lucide="check" class="h-4 w-4 text-primary"></i>
+                    <span>${item}</span>
+                </div>
+            `).join('');
+
+            // Generate Tags HTML
+            const tagsHTML = route.tags.map(tag => `
+                <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-secondary text-secondary-foreground border border-border">#${tag}</span>
+            `).join('');
+
+            // Inject Content
+            contentContainer.innerHTML = `
+                <!-- Hero Image -->
+                <div class="relative h-[40vh] md:h-[50vh] w-full">
+                    <img src="${route.image}" alt="${route.title}" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent"></div>
+                    <div class="absolute bottom-0 left-0 w-full p-6 md:p-12">
+                        <div class="container mx-auto">
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                ${tagsHTML}
+                            </div>
+                            <h1 class="text-3xl md:text-5xl font-bold text-foreground mb-4">${route.title}</h1>
+                            <div class="flex flex-wrap gap-6 text-sm md:text-base font-medium text-muted-foreground">
+                                <div class="flex items-center gap-2">
+                                    <i data-lucide="map-pin" class="h-5 w-5 text-primary"></i>
+                                    ${route.location}
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <i data-lucide="mountain" class="h-5 w-5 text-primary"></i>
+                                    海拔: ${route.altitude}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <div class="container mx-auto px-4 md:px-12 py-8 md:py-12 grid lg:grid-cols-3 gap-10">
+                    
+                    <!-- Left Column: Intro & Itinerary -->
+                    <div class="lg:col-span-2 space-y-10">
+                        <!-- Description -->
+                        <section>
+                            <h2 class="text-2xl font-bold mb-4">线路简介</h2>
+                            <p class="text-muted-foreground leading-relaxed text-lg">
+                                ${route.fullDesc}
+                            </p>
+                        </section>
+
+                        <!-- Stats Grid -->
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div class="p-4 rounded-xl bg-accent/20 border text-center">
+                                <div class="text-2xl font-bold text-primary mb-1">${route.distance}</div>
+                                <div class="text-xs text-muted-foreground uppercase">徒步距离</div>
+                            </div>
+                            <div class="p-4 rounded-xl bg-accent/20 border text-center">
+                                <div class="text-2xl font-bold text-primary mb-1">${route.duration}</div>
+                                <div class="text-xs text-muted-foreground uppercase">行程天数</div>
+                            </div>
+                            <div class="p-4 rounded-xl bg-accent/20 border text-center">
+                                <div class="text-2xl font-bold text-primary mb-1 capitalize">${route.difficulty === 'easy' ? '入门' : route.difficulty === 'moderate' ? '进阶' : '硬核'}</div>
+                                <div class="text-xs text-muted-foreground uppercase">难度评级</div>
+                            </div>
+                            <div class="p-4 rounded-xl bg-accent/20 border text-center">
+                                <div class="text-xl font-bold text-primary mb-1 line-clamp-1">${route.bestSeason.split('（')[0]}</div>
+                                <div class="text-xs text-muted-foreground uppercase">最佳季节</div>
+                            </div>
+                        </div>
+
+                        <!-- Itinerary -->
+                        <section>
+                            <h2 class="text-2xl font-bold mb-6 flex items-center gap-2">
+                                <i data-lucide="calendar-days" class="h-6 w-6 text-primary"></i>
+                                每日行程
+                            </h2>
+                            <div class="pl-2">
+                                ${itineraryHTML}
+                            </div>
+                        </section>
+
+                        <!-- Scenic Spots Module (Conditional) -->
+                        ${route.scenicSpots && route.scenicSpots.length > 0 ? `
+                        <section class="mt-12 pt-10 border-t">
+                            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                                <h2 class="text-2xl font-bold flex items-center gap-2">
+                                    <i data-lucide="camera" class="h-6 w-6 text-primary"></i>
+                                    精选摄影景点
+                                </h2>
+                                <div class="flex flex-wrap gap-2">
+                                    <button onclick="filterScenicSpots('all')" class="spot-filter-btn active px-3 py-1.5 rounded-full text-xs font-medium bg-primary text-primary-foreground hover:bg-primary/90 transition-colors" data-filter="all">全部</button>
+                                    <button onclick="filterScenicSpots('village')" class="spot-filter-btn px-3 py-1.5 rounded-full text-xs font-medium bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-colors" data-filter="village">古村落</button>
+                                    <button onclick="filterScenicSpots('nature')" class="spot-filter-btn px-3 py-1.5 rounded-full text-xs font-medium bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-colors" data-filter="nature">自然风光</button>
+                                    <button onclick="filterScenicSpots('flower')" class="spot-filter-btn px-3 py-1.5 rounded-full text-xs font-medium bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-colors" data-filter="flower">油菜花田</button>
+                                </div>
+                            </div>
+                            
+                            <div id="scenic-spots-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                ${route.scenicSpots.map(spot => `
+                                    <div class="spot-card group relative rounded-xl overflow-hidden border bg-card shadow-sm hover:shadow-lg transition-all duration-300" data-type="${spot.type}">
+                                        <!-- Image Container -->
+                                        <div class="relative h-56 overflow-hidden cursor-zoom-in" onclick="showPhotoGallery(${route.id}, -1, '${spot.image}', '${spot.name}', '${spot.desc}')">
+                                            <img src="${spot.image}" 
+                                                 alt="${spot.name}" 
+                                                 class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                                 loading="lazy"
+                                                 onerror="this.src='https://images.unsplash.com/photo-1518082260682-16c4f3162793?q=80&w=800'">
+                                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-80"></div>
+                                            <div class="absolute bottom-4 left-4 text-white">
+                                                <h3 class="text-xl font-bold mb-1">${spot.name}</h3>
+                                                <div class="flex gap-2">
+                                                    ${spot.tags.map(tag => `<span class="text-xs bg-white/20 backdrop-blur px-2 py-0.5 rounded-full">${tag}</span>`).join('')}
+                                                </div>
+                                            </div>
+                                            <div class="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <span class="bg-black/50 backdrop-blur text-white text-xs px-2 py-1 rounded-full flex items-center gap-1">
+                                                    <i data-lucide="maximize-2" class="h-3 w-3"></i> 放大
+                                                </span>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Info Toggle -->
+                                        <div class="p-4 bg-card">
+                                            <div class="flex justify-between items-start">
+                                                <p class="text-sm text-muted-foreground line-clamp-2">${spot.desc}</p>
+                                                <button onclick="toggleSpotDetails(this)" class="text-primary hover:text-primary/80 ml-2 p-1">
+                                                    <i data-lucide="chevron-down" class="h-5 w-5 transition-transform duration-300"></i>
+                                                </button>
+                                            </div>
+                                            
+                                            <!-- Expandable Details -->
+                                            <div class="spot-details hidden mt-4 pt-4 border-t space-y-3 text-sm animate-in slide-in-from-top-2 duration-200">
+                                                <div class="flex gap-3">
+                                                    <i data-lucide="clock" class="h-4 w-4 text-primary shrink-0 mt-0.5"></i>
+                                                    <div>
+                                                        <span class="font-semibold block text-foreground">最佳观赏时间</span>
+                                                        <span class="text-muted-foreground">${spot.details.bestTime}</span>
+                                                    </div>
+                                                </div>
+                                                <div class="flex gap-3">
+                                                    <i data-lucide="ticket" class="h-4 w-4 text-primary shrink-0 mt-0.5"></i>
+                                                    <div>
+                                                        <span class="font-semibold block text-foreground">门票价格</span>
+                                                        <span class="text-muted-foreground">${spot.details.ticket}</span>
+                                                    </div>
+                                                </div>
+                                                <div class="flex gap-3">
+                                                    <i data-lucide="bus" class="h-4 w-4 text-primary shrink-0 mt-0.5"></i>
+                                                    <div>
+                                                        <span class="font-semibold block text-foreground">交通信息</span>
+                                                        <span class="text-muted-foreground">${spot.details.transport}</span>
+                                                    </div>
+                                                </div>
+                                                <div class="bg-accent/30 p-3 rounded-lg flex gap-3">
+                                                    <i data-lucide="lightbulb" class="h-4 w-4 text-amber-500 shrink-0 mt-0.5"></i>
+                                                    <div>
+                                                        <span class="font-semibold block text-foreground">摄影建议</span>
+                                                        <span class="text-muted-foreground text-xs leading-relaxed">${spot.details.tips}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </section>
+                        ` : ''}
+
+                    <!-- Right Column: Sidebar -->
+                    <div class="space-y-8">
+                        <!-- Best Season Card -->
+                        <div class="rounded-xl border bg-card p-6 shadow-sm">
+                            <h3 class="font-bold text-lg mb-4 flex items-center gap-2">
+                                <i data-lucide="sun" class="h-5 w-5 text-orange-500"></i>
+                                最佳出行季节
+                            </h3>
+                            <p class="text-muted-foreground text-sm">${route.bestSeason}</p>
+                        </div>
+
+                        <!-- Gear List Card -->
+                        <div class="rounded-xl border bg-card p-6 shadow-sm">
+                            <h3 class="font-bold text-lg mb-4 flex items-center gap-2">
+                                <i data-lucide="backpack" class="h-5 w-5 text-primary"></i>
+                                建议装备
+                            </h3>
+                            <div class="grid grid-cols-1 gap-2">
+                                ${gearHTML}
+                            </div>
+                        </div>
+
+                        <!-- Safety Tip (Conditional) -->
+                        ${route.difficulty === 'hard' ? `
+                        <div class="rounded-xl border border-red-200 bg-red-50 p-6 text-red-800 dark:bg-red-950/30 dark:text-red-300 dark:border-red-900">
+                            <h3 class="font-bold text-lg mb-2 flex items-center gap-2">
+                                <i data-lucide="alert-triangle" class="h-5 w-5"></i>
+                                风险提示
+                            </h3>
+                            <p class="text-sm">此线路属于高难度专业线路，气候多变，地形复杂。请务必结伴同行，准备充足的装备和食物，并购买专业户外保险。</p>
+                        </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+
+            // Show Page
+            detailPage.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            
+            // Re-init Icons for new content
+            lucide.createIcons();
+        }
+
+        function hideRouteDetails() {
+            const detailPage = document.getElementById('route-detail-page');
+            detailPage.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        // Photo Gallery Logic
+        function showPhotoGallery(routeId, dayIndex = -1, spotImage = null, spotName = null, spotDesc = null) {
+            const route = routesData.find(r => r.id === routeId);
+            if (!route) return;
+
+            const modal = document.getElementById('photo-gallery-modal');
+            const imgContainer = document.getElementById('gallery-image-container');
+            const infoContainer = document.getElementById('gallery-info');
+
+            let imageUrl, desc, params;
+
+            if (dayIndex !== -1 && route.itinerary[dayIndex].photos && route.itinerary[dayIndex].photos.length > 0) {
+                // Show itinerary photo
+                const photo = route.itinerary[dayIndex].photos[0]; // Currently just showing first photo
+                imageUrl = photo.url;
+                desc = photo.desc;
+                params = photo.params;
+            } else if (spotImage) {
+                 // Show scenic spot photo
+                imageUrl = spotImage;
+                desc = spotName;
+                params = spotDesc;
+            } else {
+                return;
+            }
+
+            imgContainer.innerHTML = `<img src="${imageUrl}" class="h-full object-contain" alt="Photo">`;
+            
+            let infoHTML = '';
+            if (desc) infoHTML += `<h3 class="text-xl font-bold mb-2">${desc}</h3>`;
+            if (params) infoHTML += `<p class="text-white/80 text-sm bg-white/10 inline-block px-3 py-1 rounded-full backdrop-blur-sm">${params}</p>`;
+            
+            infoContainer.innerHTML = infoHTML;
+
+            modal.classList.remove('hidden');
+            // document.body.style.overflow = 'hidden'; // Already hidden by detail page
+        }
+
+        function toggleSpotDetails(btn) {
+            const card = btn.closest('.spot-card');
+            const details = card.querySelector('.spot-details');
+            const icon = btn.querySelector('i');
+            
+            if (details.classList.contains('hidden')) {
+                details.classList.remove('hidden');
+                icon.style.transform = 'rotate(180deg)';
+            } else {
+                details.classList.add('hidden');
+                icon.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        function filterScenicSpots(type) {
+            // Update Buttons
+            document.querySelectorAll('.spot-filter-btn').forEach(btn => {
+                if(btn.dataset.filter === type) {
+                    btn.classList.add('bg-primary', 'text-primary-foreground');
+                    btn.classList.remove('bg-secondary', 'text-secondary-foreground');
+                } else {
+                    btn.classList.remove('bg-primary', 'text-primary-foreground');
+                    btn.classList.add('bg-secondary', 'text-secondary-foreground');
+                }
+            });
+
+            // Filter Cards
+            document.querySelectorAll('.spot-card').forEach(card => {
+                if (type === 'all' || card.dataset.type === type) {
+                    card.classList.remove('hidden');
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+        }
+
+        function hidePhotoGallery() {
+            const modal = document.getElementById('photo-gallery-modal');
+            modal.classList.add('hidden');
+            // Do not restore overflow here as we are likely returning to the detail page which needs overflow:hidden
+        }
+
+        // Filter Handler
+        function filterRoutes(type) {
+            // Update Buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                if(btn.dataset.filter === type) {
+                    btn.classList.add('bg-primary', 'text-primary-foreground');
+                    btn.classList.remove('bg-secondary', 'text-secondary-foreground');
+                } else {
+                    btn.classList.remove('bg-primary', 'text-primary-foreground');
+                    btn.classList.add('bg-secondary', 'text-secondary-foreground');
+                }
+            });
+
+            // Re-render
+            renderRoutes(type);
+        }
+
+        // Mobile Menu Toggle
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        // Event Listeners
+        document.getElementById('mobile-menu-btn').addEventListener('click', toggleMobileMenu);
+
+        // Initial Render
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchRoutes();
+        });
+
+    </script>
+</body>
+</html>
