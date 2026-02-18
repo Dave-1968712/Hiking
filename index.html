@@ -154,7 +154,7 @@
         </div>
         
         <div class="container relative z-10 px-4 md:px-6 text-center text-white space-y-6">
-            <h1 class="text-4xl md:text-6xl font-bold tracking-tight">
+            <h1 id="site-title" class="text-4xl md:text-6xl font-bold tracking-tight">
                 探索脚下的路<br>发现心中的山
             </h1>
             <p class="text-lg md:text-xl text-gray-200 max-w-2xl mx-auto">
@@ -476,9 +476,11 @@
                 if (error && error.code !== 'PGRST116') throw error;
                 
                 if (data && data.value) {
-                    const titleEl = document.querySelector('h1.text-4xl');
+                    const titleEl = document.getElementById('site-title') || document.querySelector('h1.text-4xl');
                     if (titleEl) {
                         titleEl.innerHTML = data.value;
+                    } else {
+                        console.warn('Site title element not found');
                     }
                 }
             } catch (e) {
