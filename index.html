@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>加载中...</title>
+    <title>山野徒步 - 探索国内最美徒步线路</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts -->
@@ -476,43 +476,24 @@
                 if (error && error.code !== 'PGRST116') throw error;
                 
                 if (data && data.value) {
+                    // Update H1 Title
                     const titleEl = document.getElementById('site-title') || document.querySelector('h1.text-4xl');
                     if (titleEl) {
                         titleEl.innerHTML = data.value;
                     } else {
                         console.warn('Site title element not found');
                     }
-                    
-                    // Update Page Title (strip HTML)
-                    const tempDiv = document.createElement('div');
-                    tempDiv.innerHTML = data.value;
-                    const textContent = tempDiv.textContent || tempDiv.innerText || '';
-                    document.title = textContent + " - 山野徒步";
+
+                    // Update Document Title (Browser Tab)
+                    // Remove HTML tags for clean text
+                    const plainTitle = data.value.replace(/<[^>]*>?/gm, ' ').replace(/\s+/g, ' ').trim();
+                    if (plainTitle) {
+                        document.title = plainTitle;
+                    }
                 }
             } catch (e) {
                 console.error('Error fetching site config:', e);
-                document.title = "山野徒步 - 探索国内最美徒步线路"; // Fallback
             }
-        }
-
-        // Subscribe to Realtime Changes
-        function subscribeToSiteConfig() {
-            supabase
-                .channel('site-config-changes')
-                .on(
-                    'postgres_changes',
-                    {
-                        event: 'UPDATE',
-                        schema: 'public',
-                        table: 'site_config',
-                        filter: 'key=eq.site_title',
-                    },
-                    (payload) => {
-                        console.log('Realtime update received:', payload);
-                        fetchSiteConfig();
-                    }
-                )
-                .subscribe();
         }
 
         // Map DB route to Frontend route
@@ -1042,7 +1023,6 @@
         document.addEventListener('DOMContentLoaded', () => {
             fetchRoutes();
             fetchSiteConfig();
-            subscribeToSiteConfig();
         });
 
     </script>
