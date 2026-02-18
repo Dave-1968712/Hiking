@@ -456,7 +456,12 @@
         // --- Config ---
         const SUPABASE_URL = 'https://dojjyarpayutgwwvyvho.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRvamp5YXJwYXl1dGd3d3Z5dmhvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE0MDMyNDAsImV4cCI6MjA4Njk3OTI0MH0.IUOk8MaMMdrdLRpErc8GM16akFn6Kitt4ppLL9B8hU4';
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const supabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+        const REST_ENDPOINT = `${SUPABASE_URL}/rest/v1/site_config?select=value&key=eq.site_title`;
+        const REST_HEADERS = {
+            apikey: SUPABASE_KEY,
+            Authorization: `Bearer ${SUPABASE_KEY}`
+        };
 
         // --- Data ---
         let routesData = [];
@@ -466,33 +471,50 @@
 
         // Fetch Site Config
         async function fetchSiteConfig() {
-            try {
-                const { data, error } = await supabase
-                    .from('site_config')
-                    .select('value')
-                    .eq('key', 'site_title')
-                    .single();
-                
-                if (error && error.code !== 'PGRST116') throw error;
-                
-                if (data && data.value) {
-                    // Update H1 Title
-                    const titleEl = document.getElementById('site-title') || document.querySelector('h1.text-4xl');
-                    if (titleEl) {
-                        titleEl.innerHTML = data.value;
-                    } else {
-                        console.warn('Site title element not found');
-                    }
+            let value = null;
 
-                    // Update Document Title (Browser Tab)
-                    // Remove HTML tags for clean text
-                    const plainTitle = data.value.replace(/<[^>]*>?/gm, ' ').replace(/\s+/g, ' ').trim();
-                    if (plainTitle) {
-                        document.title = plainTitle;
+            if (supabase) {
+                try {
+                    const { data, error } = await supabase
+                        .from('site_config')
+                        .select('value')
+                        .eq('key', 'site_title')
+                        .single();
+                    
+                    if (error && error.code !== 'PGRST116') throw error;
+                    
+                    if (data && data.value) {
+                        value = data.value;
                     }
+                } catch (e) {
+                    console.error('Error fetching site config via Supabase client:', e);
                 }
-            } catch (e) {
-                console.error('Error fetching site config:', e);
+            }
+
+            if (!value) {
+                try {
+                    const response = await fetch(REST_ENDPOINT, { headers: REST_HEADERS });
+                    if (response.ok) {
+                        const json = await response.json();
+                        if (Array.isArray(json) && json[0] && json[0].value) {
+                            value = json[0].value;
+                        }
+                    }
+                } catch (e) {
+                    console.error('Error fetching site config via REST:', e);
+                }
+            }
+
+            if (value) {
+                const titleEl = document.getElementById('site-title') || document.querySelector('h1.text-4xl');
+                if (titleEl) {
+                    titleEl.innerHTML = value;
+                }
+
+                const plainTitle = value.replace(/<[^>]*>?/gm, ' ').replace(/\s+/g, ' ').trim();
+                if (plainTitle) {
+                    document.title = plainTitle;
+                }
             }
         }
 
