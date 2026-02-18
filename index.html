@@ -456,7 +456,7 @@
         // --- Config ---
         const SUPABASE_URL = 'https://dojjyarpayutgwwvyvho.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRvamp5YXJwYXl1dGd3d3Z5dmhvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE0MDMyNDAsImV4cCI6MjA4Njk3OTI0MH0.IUOk8MaMMdrdLRpErc8GM16akFn6Kitt4ppLL9B8hU4';
-        const supabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+        const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
         const REST_ENDPOINT = `${SUPABASE_URL}/rest/v1/site_config?select=value&key=eq.site_title`;
         const REST_HEADERS = {
             apikey: SUPABASE_KEY,
@@ -473,9 +473,9 @@
         async function fetchSiteConfig() {
             let value = null;
 
-            if (supabase) {
+            if (supabaseClient) {
                 try {
-                    const { data, error } = await supabase
+                    const { data, error } = await supabaseClient
                         .from('site_config')
                         .select('value')
                         .eq('key', 'site_title')
@@ -598,8 +598,9 @@
             }
         }
 
-        // Initialize Icons
-        lucide.createIcons();
+        if (window.lucide && typeof window.lucide.createIcons === 'function') {
+            window.lucide.createIcons();
+        }
 
         // Render Routes
         function renderRoutes(filter = 'all') {
@@ -678,8 +679,9 @@
                 grid.insertAdjacentHTML('beforeend', cardHTML);
             });
             
-            // Re-initialize icons for newly added elements
-            lucide.createIcons();
+            if (window.lucide && typeof window.lucide.createIcons === 'function') {
+                window.lucide.createIcons();
+            }
         }
 
         // Show Details Function
